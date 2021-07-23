@@ -25,6 +25,19 @@ const reducer = (state,action) => {
                 loadding:false,
                 error:action.payload
             }
+            case "POST_COMMENT":
+                return {
+                    ...state,
+                    // loadding:true,
+                }
+            case "POST_COMMENT_SUCCESS":
+                return {
+                    ...state,
+                    // loadding: false,
+                    commentItem:[...state.commentItem,action.payload]
+                }
+            case "POST_COMMENT_ERROR":
+                return state
         case "CREATE":
             return {
                 ...state,

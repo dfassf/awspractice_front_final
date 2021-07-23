@@ -1,4 +1,5 @@
 import React,{useContext,useState} from 'react'
+import { postComment } from './api/api'
 import Store from './Store/context'
 
 const CommentForm = () => {
@@ -12,8 +13,9 @@ const CommentForm = () => {
 
     const handleSubmit = e => {
         e.preventDefault()
-        dispatch({ type:'CREATE' ,payload:{userid:'web7722',content:input,date:'2021-07-14'} })
+        // dispatch({ type:'CREATE' ,payload:{userid:'web7722',content:input,date:'2021-07-14'} })
         setInput('')
+        postComment(dispatch,{userid:'web7722',content:input})
     }
     
     return (

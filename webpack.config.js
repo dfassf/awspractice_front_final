@@ -1,61 +1,65 @@
 const path = require('path')
-const webpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
+const RefreshwebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const mode = 'production'
+// const mode = 'development'
+const devtool = 'hidden-source-map'
+// const devtool = 'eval'
+const isDevelopment = mode === 'production';
+const refresh = isDevelopment ? [] : ['react-refresh/babel']
 
 module.exports = {
     name:'ingoo',
-    mode:'development', // production
-    devtool:'eval', // hidden-source-map
+    mode:mode,
+    devtool:devtool,
 
     resolve:{
-        extensions:['.js','.jsx']
+        extensions:['.js', '.jsx']
     },
-    // 입력받을 내용들
+
     entry:{
         app:['./index.jsx']
     },
-
     module:{
-        rules:[{
-            test:/\.jsx?$/,
-            loader:'babel-loader',
-            options:{
-                presets:[
-                    ['@babel/preset-env',{
-                        targets:{
-                            browsers:['> 5% in KR','last 2 chrome versions']
-                        },
-                        debug:true,
-                    }],
-                    '@babel/preset-react'
-                ],
-                plugins:[
-                    'react-refresh/babel'
-                ]
+        rules:[
+            {
+                test:/\.jsx?$/,
+                loader:'babel-loader',
+                options:{
+                    presets:[
+                        ['@babel/preset-env',{
+                            targets:{browsers:['last 2 chrome versions']}
+                        }],
+                        '@babel/preset-react'
+                    ],
+                    plugins:refresh
+                },
+            },
+            {
+                test:/\.css$/,
+                use:[MiniCssExtractPlugin.loader,'css-loader']
             }
-        },{
-            test:/\.css$/,
-            use:[MiniCssExtractPlugin.loader,'css-loader']
-        }]
+        ],
     },
 
     plugins:[
-        new webpackPlugin(),
+        new RefreshwebpackPlugin(),
         new webpack.LoaderOptionsPlugin({debug:true}),
-        new MiniCssExtractPlugin({ filename:'app.css' })
+        new MiniCssExtractPlugin({ filename: 'app.css' })
     ],
-
-    //내보낼 내용들
     output:{
-        path:path.join(__dirname,'dist'), // 현재디렉토리 + dist까지
+        path:path.join(__dirname,'dist'),
         filename:'app.js',
-        publicPath:'/dist'
+        publicPath:'/dist',
     },
 
     devServer:{
         publicPath:'/dist',
         hot:true,
-        historyApiFallback:true // 새로고침시 해당 url이 없을경에도 그냥 무시하고 실행 
+        proxy: {
+            '/api': 'http://localhost:3000',
+        },
+        host: '0.0.0.0',
     }
 }
